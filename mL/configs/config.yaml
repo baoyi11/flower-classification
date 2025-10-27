@@ -1,8 +1,12 @@
 app:
   host: "0.0.0.0"
   port: 8000
+  debug: false
 
 data:
+  raw_path: "data/raw"
+  v1_path: "data/v1" 
+  v2_path: "data/v2"
   image_size: [128, 128]
   batch_size: 32
 
@@ -10,3 +14,6 @@ model:
   num_classes: 5
   learning_rate: 0.001
   epochs: 5
+
+mlflow:
+  tracking_uri: "mL/mlruns"
