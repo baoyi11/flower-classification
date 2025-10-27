@@ -1,19 +1,60 @@
 app:
   host: "0.0.0.0"
   port: 8000
-  debug: false
 
 data:
+  # 修复：添加缺失的路径配置
   raw_path: "data/raw"
-  v1_path: "data/v1" 
+  processed_path: "data/processed"
+  v1_path: "data/v1"
   v2_path: "data/v2"
   image_size: [128, 128]
   batch_size: 32
+  num_workers: 4
+  # 添加数据增强配置
+  augmentation:
+    rotation: 20
+    width_shift: 0.2
+    height_shift: 0.2
+    horizontal_flip: true
 
 model:
   num_classes: 5
   learning_rate: 0.001
   epochs: 5
+  save_path: "models"
+  # 添加模型配置
+  input_size: [128, 128, 3]
+  optimizer: "adam"
+  loss: "sparse_categorical_crossentropy"
+  metrics: ["accuracy"]
+
+logs:
+  path: "logs"
+  tensorboard_dir: "logs/tensorboard"
+  # 添加日志配置
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 mlflow:
   tracking_uri: "mL/mlruns"
+  experiment_name: "flower-classification"
+  # 添加MLflow配置
+  registry_uri: ""
+  run_name: "training-run"
+  # Dagshub集成配置（如果使用）
+  dagshub_username: "${DAGSHUB_USERNAME:-}"
+  dagshub_token: "${DAGSHUB_TOKEN:-}"
+
+training:
+  # 添加训练配置
+  early_stopping_patience: 5
+  reduce_lr_patience: 3
+  validation_split: 0.2
+  shuffle: true
+
+evaluation:
+  # 添加评估配置
+  metrics: ["accuracy", "precision", "recall", "f1_score"]
+  confusion_matrix: true
+  classification_report: true
