@@ -7,6 +7,7 @@ import io
 import json
 import torch
 import torch.nn.functional as F
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from PIL import Image
 
@@ -24,16 +25,9 @@ except ImportError as e:
     print("请确保在项目根目录运行此脚本")
     sys.exit(1)
 
-app = FastAPI(
-    title="花卉分类API",
-    description="简化的花卉图像分类服务",
-    version="1.0.0"
-)
-
 # 全局变量
 model = None
 class_names = {}
-
 
 def load_model():
     """加载模型"""
@@ -72,6 +66,23 @@ def load_model():
         print(f"❌ 模型加载失败: {e}")
         return False
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """生命周期管理器"""
+    # 启动时加载模型
+    print("启动花卉分类API服务...")
+    if not load_model():
+        raise RuntimeError("模型加载失败，服务无法启动")
+    yield
+    # 关闭时清理资源
+    print("关闭花卉分类API服务...")
+
+app = FastAPI(
+    title="花卉分类API",
+    description="简化的花卉图像分类服务",
+    version="1.0.0",
+    lifespan=lifespan
+)
 
 def preprocess_image(image_bytes):
     """预处理图像"""
@@ -86,8 +97,9 @@ def preprocess_image(image_bytes):
                 transforms.Resize(config.get("data.image_size", [128, 128])),
                 transforms.ToTensor(),
                 transforms.Normalize(
-                    mean=[0.5, 0.5, 0.5],
-                    std=[0.5, 0.5, 0.5]),
+                    mean=[0.5, 0.5, 0.5], 
+                    std=[0.5, 0.5, 0.5]
+                ),
             ]
         )
 
@@ -97,15 +109,6 @@ def preprocess_image(image_bytes):
         raise HTTPException(
             status_code=400, detail=f"图像处理失败: {str(e)}"
         )
-
-
-@app.on_event("startup")
-async def startup_event():
-    """应用启动时加载模型"""
-    print("启动花卉分类API服务...")
-    if not load_model():
-        raise RuntimeError("模型加载失败，服务无法启动")
-
 
 @app.get("/")
 async def root():
@@ -117,7 +120,6 @@ async def root():
         "num_classes": len(class_names),
     }
 
-
 @app.get("/health")
 async def health_check():
     """健康检查"""
@@ -126,7 +128,6 @@ async def health_check():
         "model_loaded": model is not None,
         "num_classes": len(class_names),
     }
-
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
@@ -161,7 +162,6 @@ async def predict(file: UploadFile = File(...)):
         raise HTTPException(
             status_code=500, detail=f"预测失败: {str(e)}"
         )
-
 
 if __name__ == "__main__":
     import uvicorn
