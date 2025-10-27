@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM efreidevopschina.azurecr.io/cache/library/python:3.9-slim
 
 WORKDIR /app
 
