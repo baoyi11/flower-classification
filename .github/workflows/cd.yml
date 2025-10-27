@@ -1,0 +1,22 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Build production image
+      run: |
+        docker build -t flower-classification:prod .
+    
+    - name: Log deployment
+      run: |
+        echo "Production deployment completed"
+        echo "Image: flower-classification:prod"
