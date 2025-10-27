@@ -20,7 +20,8 @@ env/
 *.swo
 
 # Data and models
-data/
+data/*
+!data/*.dvc
 mL/registry/
 mL/mlruns/
 
