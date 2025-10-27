@@ -69,8 +69,7 @@ class FlowerDataset(Dataset):
             return image, 0
 
 
-def get_data_loaders(data_dir: str, batch_size: int = None,
-                     train_split: float = 0.8):
+def get_data_loaders(data_dir: str, batch_size: int = None, train_split: float = 0.8):
     """获取数据加载器"""
 
     # 使用配置值或默认值
@@ -101,20 +100,13 @@ def get_data_loaders(data_dir: str, batch_size: int = None,
     if train_size == 0 or test_size == 0:
         raise ValueError("数据集太小，无法分割")
 
-    train_dataset, test_dataset = random_split(
-        dataset, [train_size, test_size]
-    )
+    train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
 
     # 创建数据加载器
-    train_loader = DataLoader(
-        train_dataset, batch_size=batch_size, shuffle=True
-    )
-    test_loader = DataLoader(
-        test_dataset, batch_size=batch_size, shuffle=False
-    )
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
-    print(f"✅ 创建数据加载器: 训练集 {train_size} 样本, "
-          f"测试集 {test_size} 样本")
+    print(f"✅ 创建数据加载器: 训练集 {train_size} 样本, " f"测试集 {test_size} 样本")
     print(f"✅ 类别数量: {len(dataset.class_to_idx)}")
 
     return train_loader, test_loader, dataset.class_to_idx

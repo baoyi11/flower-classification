@@ -11,17 +11,14 @@ class SimpleTrainer:
     """简化的模型训练器"""
 
     def __init__(self, model, model_name: str = "simple"):
-        self.device = torch.device(
-            "cuda" if torch.cuda.is_available() else "cpu"
-        )
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = model.to(self.device)
         self.model_name = model_name
 
         # 设置优化器和损失函数
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.Adam(
-            self.model.parameters(),
-            lr=config.get("model.learning_rate", 0.001)
+            self.model.parameters(), lr=config.get("model.learning_rate", 0.001)
         )
 
         # 设置MLflow
@@ -55,10 +52,7 @@ class SimpleTrainer:
             correct += predicted.eq(labels).sum().item()
 
             pbar.set_postfix(
-                {
-                    "Loss": f"{loss.item():.4f}",
-                    "Acc": f"{100.*correct/total:.2f}%"
-                }
+                {"Loss": f"{loss.item():.4f}", "Acc": f"{100.*correct/total:.2f}%"}
             )
 
         epoch_loss = running_loss / len(train_loader)
@@ -121,8 +115,7 @@ class SimpleTrainer:
 
                 print(f"Epoch {epoch+1}/{epochs}:")
                 print(
-                    f"  Train Loss: {train_loss:.4f}, "
-                    f"Train Acc: {train_acc:.2f}%"
+                    f"  Train Loss: {train_loss:.4f}, " f"Train Acc: {train_acc:.2f}%"
                 )
                 print(f"  Test Acc: {test_acc:.2f}%")
 
@@ -144,7 +137,5 @@ class SimpleTrainer:
     def load_model(self, filename: str):
         """加载模型"""
         model_path = f"ml/registry/{filename}"
-        self.model.load_state_dict(
-            torch.load(model_path, map_location=self.device)
-        )
+        self.model.load_state_dict(torch.load(model_path, map_location=self.device))
         print(f"模型从 {model_path} 加载")

@@ -27,11 +27,7 @@ except ImportError as e:
                 "batch_size": 32,
                 "image_size": [128, 128],
             }
-            self.model = {
-                "epochs": 5,
-                "learning_rate": 0.001,
-                "num_classes": 5
-            }
+            self.model = {"epochs": 5, "learning_rate": 0.001, "num_classes": 5}
             self.mlflow = {"tracking_uri": "./mlruns"}
 
         def get(self, key, default=None):
@@ -80,9 +76,7 @@ def train_model(data_version: str = "v1", model_type: str = "simple"):
 
     # 训练模型
     trainer = SimpleTrainer(model, model_name=f"{model_type}_{data_version}")
-    trainer.train(
-        train_loader, test_loader, epochs=config.get("model.epochs", 5)
-    )
+    trainer.train(train_loader, test_loader, epochs=config.get("model.epochs", 5))
 
     print("训练完成!")
 

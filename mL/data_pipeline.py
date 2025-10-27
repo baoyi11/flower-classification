@@ -66,9 +66,7 @@ def create_dataset_version_v2(input_dir: str, output_dir: str):
         augmentations = [
             lambda img: img.transpose(Image.FLIP_LEFT_RIGHT),
             lambda img: img.rotate(random.randint(-15, 15)),
-            lambda img: ImageEnhance.Brightness(img).enhance(
-                random.uniform(0.8, 1.2)
-            ),
+            lambda img: ImageEnhance.Brightness(img).enhance(random.uniform(0.8, 1.2)),
         ]
 
         # 随机选择一种增强
@@ -96,9 +94,7 @@ def create_dataset_version_v2(input_dir: str, output_dir: str):
             # 创建增强版本
             for i in range(2):  # 每个图像创建2个增强版本
                 augmented_img = apply_augmentation(original_img.copy())
-                augmented_img.save(
-                    output_class_dir / f"augmented_{i}_{img_path.name}"
-                )
+                augmented_img.save(output_class_dir / f"augmented_{i}_{img_path.name}")
 
     # 创建数据集信息
     class_count = len([d for d in output_path.iterdir() if d.is_dir()])

@@ -56,9 +56,7 @@ def load_model():
             model = create_model(num_classes=len(class_names))
         else:
             model = create_model(num_classes=len(class_names))
-            model.load_state_dict(
-                torch.load(model_path, map_location="cpu")
-            )
+            model.load_state_dict(torch.load(model_path, map_location="cpu"))
             print("✅ 模型加载成功")
 
         model.eval()
@@ -101,19 +99,14 @@ def preprocess_image(image_bytes):
             [
                 transforms.Resize(config.get("data.image_size", [128, 128])),
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    mean=[0.5, 0.5, 0.5],
-                    std=[0.5, 0.5, 0.5]
-                ),
+                transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
             ]
         )
 
         return transform(image).unsqueeze(0)  # 添加batch维度
 
     except Exception as e:
-        raise HTTPException(
-            status_code=400, detail=f"图像处理失败: {str(e)}"
-        )
+        raise HTTPException(status_code=400, detail=f"图像处理失败: {str(e)}")
 
 
 @app.get("/")
@@ -167,16 +160,12 @@ async def predict(file: UploadFile = File(...)):
         }
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"预测失败: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"预测失败: {str(e)}")
 
 
 if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(
-        app,
-        host=config.get("app.host", "0.0.0.0"),
-        port=config.get("app.port", 8000)
+        app, host=config.get("app.host", "0.0.0.0"), port=config.get("app.port", 8000)
     )
