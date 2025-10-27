@@ -1,0 +1,6 @@
+outs:
+- md5: 2018275601a2640fb5e6a62bb78b73d0.dir
+  size: 4608962
+  nfiles: 2
+  hash: md5
+  path: registry
