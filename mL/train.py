@@ -2,9 +2,9 @@
 """简化的模型训练脚本"""
 
 import argparse
-import sys
 import json
 import os
+import sys
 
 # 添加项目根目录到 Python 路径
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -17,7 +17,7 @@ try:
 except ImportError as e:
     print(f"导入错误: {e}")
     print("使用备用配置...")
-    
+
     # 备用配置类
     class Config:
         def __init__(self):
@@ -25,17 +25,15 @@ except ImportError as e:
                 "v1_path": "data/v1",
                 "v2_path": "data/v2",
                 "batch_size": 32,
-                "image_size": [128, 128]
+                "image_size": [128, 128],
             }
             self.model = {
                 "epochs": 5,
                 "learning_rate": 0.001,
                 "num_classes": 5
             }
-            self.mlflow = {
-                "tracking_uri": "./mlruns"
-            }
-        
+            self.mlflow = {"tracking_uri": "./mlruns"}
+
         def get(self, key, default=None):
             keys = key.split(".")
             value = self.__dict__
@@ -45,7 +43,7 @@ except ImportError as e:
                 else:
                     return default
             return value
-    
+
     config = Config()
 
 
@@ -82,8 +80,9 @@ def train_model(data_version: str = "v1", model_type: str = "simple"):
 
     # 训练模型
     trainer = SimpleTrainer(model, model_name=f"{model_type}_{data_version}")
-    trainer.train(train_loader, test_loader,
-                  epochs=config.get("model.epochs", 5))
+    trainer.train(
+        train_loader, test_loader, epochs=config.get("model.epochs", 5)
+    )
 
     print("训练完成!")
 

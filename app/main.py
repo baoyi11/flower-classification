@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """简化的花卉分类API"""
 
-import os
-import sys
 import io
 import json
+import os
+import sys
+from contextlib import asynccontextmanager
+
 import torch
 import torch.nn.functional as F
-from contextlib import asynccontextmanager
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from PIL import Image
 
@@ -28,6 +29,7 @@ except ImportError as e:
 # 全局变量
 model = None
 class_names = {}
+
 
 def load_model():
     """加载模型"""
@@ -66,6 +68,7 @@ def load_model():
         print(f"❌ 模型加载失败: {e}")
         return False
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """生命周期管理器"""
@@ -77,12 +80,14 @@ async def lifespan(app: FastAPI):
     # 关闭时清理资源
     print("关闭花卉分类API服务...")
 
+
 app = FastAPI(
     title="花卉分类API",
     description="简化的花卉图像分类服务",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
+
 
 def preprocess_image(image_bytes):
     """预处理图像"""
@@ -97,7 +102,7 @@ def preprocess_image(image_bytes):
                 transforms.Resize(config.get("data.image_size", [128, 128])),
                 transforms.ToTensor(),
                 transforms.Normalize(
-                    mean=[0.5, 0.5, 0.5], 
+                    mean=[0.5, 0.5, 0.5],
                     std=[0.5, 0.5, 0.5]
                 ),
             ]
@@ -110,6 +115,7 @@ def preprocess_image(image_bytes):
             status_code=400, detail=f"图像处理失败: {str(e)}"
         )
 
+
 @app.get("/")
 async def root():
     """根端点"""
@@ -120,6 +126,7 @@ async def root():
         "num_classes": len(class_names),
     }
 
+
 @app.get("/health")
 async def health_check():
     """健康检查"""
@@ -128,6 +135,7 @@ async def health_check():
         "model_loaded": model is not None,
         "num_classes": len(class_names),
     }
+
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
@@ -162,6 +170,7 @@ async def predict(file: UploadFile = File(...)):
         raise HTTPException(
             status_code=500, detail=f"预测失败: {str(e)}"
         )
+
 
 if __name__ == "__main__":
     import uvicorn

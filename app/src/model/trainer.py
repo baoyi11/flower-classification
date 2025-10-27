@@ -120,8 +120,10 @@ class SimpleTrainer:
                 )
 
                 print(f"Epoch {epoch+1}/{epochs}:")
-                print(f"  Train Loss: {train_loss:.4f}, "
-                      f"Train Acc: {train_acc:.2f}%")
+                print(
+                    f"  Train Loss: {train_loss:.4f}, "
+                    f"Train Acc: {train_acc:.2f}%"
+                )
                 print(f"  Test Acc: {test_acc:.2f}%")
 
                 # 保存最佳模型

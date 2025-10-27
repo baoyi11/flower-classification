@@ -113,7 +113,8 @@ def get_data_loaders(data_dir: str, batch_size: int = None,
         test_dataset, batch_size=batch_size, shuffle=False
     )
 
-    print(f"✅ 创建数据加载器: 训练集 {train_size} 样本, 测试集 {test_size} 样本")
+    print(f"✅ 创建数据加载器: 训练集 {train_size} 样本, "
+          f"测试集 {test_size} 样本")
     print(f"✅ 类别数量: {len(dataset.class_to_idx)}")
 
     return train_loader, test_loader, dataset.class_to_idx

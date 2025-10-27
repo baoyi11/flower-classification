@@ -3,7 +3,7 @@
 
 import os
 import sys
-import io
+
 import pytest
 from PIL import Image
 
@@ -32,7 +32,7 @@ except ImportError:
 
 class TestFlowerAPI:
     """API测试类"""
-    
+
     @pytest.fixture(autouse=True)
     def setup_client(self):
         """设置测试客户端"""
@@ -76,6 +76,7 @@ def test_model_creation():
     """测试模型创建"""
     try:
         from app.src.model.cnn_model import create_model
+
         model = create_model(num_classes=5)
         assert model is not None
     except ImportError:
@@ -86,6 +87,7 @@ def test_config_loading():
     """测试配置加载"""
     try:
         from app.src.utils.config import config
+
         assert config is not None
     except ImportError:
         pytest.skip("无法导入配置模块，跳过此测试")
@@ -94,43 +96,48 @@ def test_config_loading():
 def test_data_loader_creation():
     """测试数据加载器创建（不依赖实际数据）"""
     try:
-        from app.src.data.data_loader import FlowerDataset
         from torchvision import transforms
-        
+
+        from app.src.data.data_loader import FlowerDataset
+
         # 创建临时测试目录结构
         test_dir = "test_temp_data"
         os.makedirs(test_dir, exist_ok=True)
-        
+
         # 创建测试图像
         for i in range(3):
             class_dir = os.path.join(test_dir, f"class_{i}")
             os.makedirs(class_dir, exist_ok=True)
-            
+
             # 创建测试图像文件
             img = Image.new("RGB", (100, 100), color=(i * 80, i * 80, i * 80))
             img_path = os.path.join(class_dir, f"test_{i}.jpg")
             img.save(img_path)
-        
+
         # 测试数据集创建
-        transform = transforms.Compose([
-            transforms.Resize((128, 128)),
-            transforms.ToTensor(),
-        ])
-        
+        transform = transforms.Compose(
+            [
+                transforms.Resize((128, 128)),
+                transforms.ToTensor(),
+            ]
+        )
+
         dataset = FlowerDataset(test_dir, transform=transform)
         assert len(dataset) == 3
         assert len(dataset.class_to_idx) == 3
-        
+
         # 清理
         import shutil
+
         shutil.rmtree(test_dir)
-        
+
     except ImportError:
         pytest.skip("无法导入数据加载器模块，跳过此测试")
     except Exception as e:
         # 如果测试失败，确保清理
         if os.path.exists("test_temp_data"):
             import shutil
+
             shutil.rmtree("test_temp_data")
         pytest.fail(f"数据加载器测试失败: {e}")
 
@@ -139,15 +146,15 @@ def test_api_endpoints_without_model():
     """测试API端点（不依赖模型加载）"""
     try:
         client = TestClient(app)
-        
+
         # 测试根端点
         response = client.get("/")
         assert response.status_code == 200
-        
+
         # 测试健康检查
         response = client.get("/health")
         assert response.status_code == 200
-        
+
     except Exception as e:
         pytest.skip(f"API端点测试跳过: {e}")
 
